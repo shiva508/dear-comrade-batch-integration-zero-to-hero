@@ -38,7 +38,7 @@ public class DearComradeBatchIntegrationZeroToHeroApplication {
 		return args -> {
 			var events = IntStream.range(1,10).mapToObj(value -> Event.builder().title(String.format("Dasari_%s",value)).image(String.format("Shiva_%s",value)).date(LocalTime.now()).build()).collect(Collectors.toSet());
 			eventRepository.saveAll(events);
-			//jobLauncher.run(dearComradeJob,new JobParametersBuilder().addDate("jobRunDate",new Date()).toJobParameters());
+			jobLauncher.run(dearComradeJob,new JobParametersBuilder().addDate("jobRunDate",new Date()).toJobParameters());
 		};
 	}
 }

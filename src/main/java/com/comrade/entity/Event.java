@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.TimeZoneColumn;
 
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -22,5 +23,6 @@ public class Event implements Serializable {
     private Long id;
     private String image;
     private String title;
+    @TimeZoneColumn()
     private LocalTime date;
 }
