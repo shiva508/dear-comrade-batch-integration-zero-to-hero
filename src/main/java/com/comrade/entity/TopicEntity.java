@@ -10,17 +10,19 @@ import java.io.Serializable;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "EVENT")
+@Table(name = "TBL_TOPIC")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Event implements Serializable {
+public class TopicEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String image;
+    private String category;
     private String title;
-    private LocalTime date;
+    private String shortDescription;
+    private LocalTime createdDate;
+    private String status;
 }
