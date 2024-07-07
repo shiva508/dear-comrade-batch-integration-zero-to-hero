@@ -37,7 +37,14 @@ public class DearComradeBatchIntegrationZeroToHeroApplication {
 			log.info("No of records available {}",topicRepository.count());
 			//topicDetailsRepository.deleteAll();
 			//topicRepository.deleteAll();
-			var events = IntStream.range(1,100000).mapToObj(value -> TopicEntity.builder().title(String.format("Who won the world cup in the year %s ",value)).category("SPORTS").createdDate(LocalTime.now()).status("IN_PROGRESS").build()).collect(Collectors.toSet());
+			var events = IntStream.range(1,100000)
+								  .mapToObj(value -> TopicEntity.builder()
+																.title(String.format("Who won the world cup in the year %s ",value))
+																.category("SPORTS")
+																.createdDate(LocalTime.now())
+																.status("IN_PROGRESS")
+																.build())
+								  .collect(Collectors.toSet());
 			topicRepository.saveAll(events);
 			log.info("Completed");
 		};
