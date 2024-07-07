@@ -4,25 +4,35 @@ import com.comrade.entity.TopicDetailsEntity;
 import com.comrade.entity.TopicEntity;
 import com.comrade.repository.TopicDetailsRepository;
 import com.comrade.repository.TopicRepository;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@Profile("dev")
 public class DearComradeCurrentAffairsScheduler {
+
     private final TopicRepository topicRepository;
+
     private final TopicDetailsRepository topicDetailsRepository;
+
     @Autowired
     private TransactionTemplate transactionTemplate;
-    //boolean hasRecords = true;
 
 
     //@Scheduled(fixedRate = 60_00)
@@ -97,35 +107,42 @@ We Need short run transactions
 
 
     @Scheduled(fixedRate = 60_000)
-    public void fetchLatestCurrentAffairsCustomTx(){
+    public void fetchLatestCurrentAffairsCustomTransactionAndSkipLocked(){
+
         boolean hasRecords = true;
-        log.info("hasRecords ? {}",hasRecords);
+        log.info("started fetchLatestCurrentAffairsCustomTransactionAndSkipLocked: hasRecords ? {}",hasRecords);
+        int count = 0;
+        //&& count <1000
         while (hasRecords){
+            count++;
 
             hasRecords = Boolean.TRUE.equals(transactionTemplate.execute(status -> {
-                log.info("Running fetchLatestCurrentAffairs");
-                List<TopicEntity> topics = topicRepository.findTop10ByStatusOrderByCreatedDateAsc("IN_PROGRESS");
-                log.info("Size {}", topics.size());
+                log.info("Started chunk processing");
+                List<TopicEntity> topics = topicRepository.findTop100ByStatusOrderByCreatedDateAsc("IN_PROGRESS");
                 if (topics.isEmpty()) {
-                    log.info("Empty Size");
+                    log.info("Records are not available for update");
                     return false;
                 }
-                topics.parallelStream().forEach(topicEntity -> {
-                    topicEntity.setShortDescription("INDIA");
-                    TopicDetailsEntity topicDetailsEntity = new TopicDetailsEntity();
-                    topicDetailsEntity.setTopicId(topicEntity.getId());
-                    topicDetailsEntity.setDescription("We all proud of INDIA");
-                    topicDetailsRepository.save(topicDetailsEntity);
-                    topicEntity.setStatus("COMPLETE");
-                    topicRepository.save(topicEntity);
-                });
-                log.info("===========");
+                try(ExecutorService myExecutor = Executors.newVirtualThreadPerTaskExecutor()) {
+                    myExecutor.submit(()->{
+                        topics.parallelStream().forEach(topicEntity -> {
+                            topicEntity.setShortDescription("INDIA");
+                            TopicDetailsEntity topicDetailsEntity = new TopicDetailsEntity();
+                            topicDetailsEntity.setTopicId(topicEntity.getId());
+                            topicDetailsEntity.setDescription("We all proud of INDIA");
+                            topicDetailsRepository.save(topicDetailsEntity);
+                            topicEntity.setStatus("COMPLETE");
+                            //topicRepository.save(topicEntity); do not do this, it is causing infinite locking
+                        });
+                        topicRepository.saveAll(topics);
+                        log.info("Chunk completed");
+                    });
+                }catch (Exception e){
+                    log.error("Exception ",e);
+                }
+                log.info("completed chunk processing");
                 return true;
             }));
-            //log.info("Final {}", hasRecords);
         }
-
-
-
     }
 }

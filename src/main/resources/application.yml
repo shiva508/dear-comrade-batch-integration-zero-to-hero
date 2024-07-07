@@ -1,24 +1,48 @@
 spring:
+  threads:
+    virtual:
+      enabled: true
   application:
     name: dear-comrade-batch-integration-zero-to-hero
   datasource:
     url: jdbc:postgresql://localhost:5432/dha
     username: comrade
     password: dear
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 10
+      idle-timeout: 120000
+      connection-timeout: 300000
+      leak-detection-threshold: 300000
+
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
-
-#    properties:
-#      hibernate:
-#        jdbc:
-#          batch_size: 10
-#        order_inserts: true
-#        order_updates: true
+#    show-sql: true
+    properties:
+      hibernate:
+#        generate_statistics: true
+        jdbc:
+          batch_size: 10
+        order_inserts: true
+        order_updates: true
   batch:
     jdbc:
       initialize-schema: ALWAYS
     job:
       enabled: false
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  metrics:
+    tags:
+      environment: dev
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: 'true'

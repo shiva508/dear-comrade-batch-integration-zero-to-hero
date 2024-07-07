@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.domain.Persistable;
 
 import java.io.Serializable;
 import java.time.LocalTime;
@@ -15,14 +17,20 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TopicEntity implements Serializable {
+@DynamicUpdate
+public class TopicEntity implements Serializable, Persistable<Long> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String category;
     private String title;
     private String shortDescription;
     private LocalTime createdDate;
     private String status;
+
+    @Override
+    public boolean isNew() {
+        return this.getId() != null ? true: false;
+    }
 }

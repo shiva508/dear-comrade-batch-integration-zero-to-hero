@@ -9,6 +9,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.time.LocalTime;
@@ -30,19 +31,16 @@ public class DearComradeBatchIntegrationZeroToHeroApplication {
 	}
 
 	@Bean
+	@Profile("!dev")
 	public ApplicationRunner applicationRunner(){
 		System.out.println(topicRepository.count());
 
 		return args -> {
-			if (false){
-				topicDetailsRepository.deleteAll();
-				topicRepository.deleteAll();
-				var events = IntStream.range(1,10000).mapToObj(value -> TopicEntity.builder().title(String.format("Who won the world cup in the year %s ",value)).category("SPORTS").createdDate(LocalTime.now()).status("IN_PROGRESS").build()).collect(Collectors.toSet());
-				topicRepository.saveAll(events);
-				log.info("Completed");
-				//jobLauncher.run(dearComradeJob,new JobParametersBuilder().addDate("jobRunDate",new Date()).toJobParameters());
-
-			}
+			//topicDetailsRepository.deleteAll();
+			//topicRepository.deleteAll();
+			var events = IntStream.range(1,100000).mapToObj(value -> TopicEntity.builder().title(String.format("Who won the world cup in the year %s ",value)).category("SPORTS").createdDate(LocalTime.now()).status("IN_PROGRESS").build()).collect(Collectors.toSet());
+			topicRepository.saveAll(events);
+			log.info("Completed");
 		};
 	}
 }

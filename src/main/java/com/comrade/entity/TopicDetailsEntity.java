@@ -18,7 +18,7 @@ import java.time.LocalTime;
 public class TopicDetailsEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long topicDetailsId;
     private Long topicId;
     private String description;
