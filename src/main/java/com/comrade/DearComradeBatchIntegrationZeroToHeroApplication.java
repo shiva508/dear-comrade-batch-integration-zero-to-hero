@@ -33,8 +33,7 @@ public class DearComradeBatchIntegrationZeroToHeroApplication {
 	@Bean
 	@Profile("!dev")
 	public ApplicationRunner applicationRunner(){
-		System.out.println(topicRepository.count());
-
+        log.info("No of records available {}",topicRepository.count());
 		return args -> {
 			//topicDetailsRepository.deleteAll();
 			//topicRepository.deleteAll();
