@@ -23,7 +23,7 @@ public class DataMigrationController {
 	@Qualifier("jpaBatchJob")
 	private Job jpaBatchJob; 
 
-	@GetMapping("/triggerjob")
+	@GetMapping("/triggerJob")
 	public ResponseEntity<String> triggerJob(){
 
 		try {

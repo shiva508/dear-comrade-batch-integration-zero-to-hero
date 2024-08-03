@@ -16,47 +16,47 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 @Configuration
 public class StudentpoolDatasourceConfig {
 	@Primary
-	@Bean
-	@ConfigurationProperties(prefix = "spring.datasource")
-	public DataSource datasource() {
+	@Bean(name = "datasourceOld")
+	@ConfigurationProperties(prefix = "spring.datasourceOld")
+	public DataSource datasourceOld() {
 		return DataSourceBuilder.create().build();
 	}
 
-	@Bean
-	@ConfigurationProperties(prefix = "spring.datasourcetwo")
-	public DataSource datasourcetwo() {
+	@Bean(name = "datasourceLatest")
+	@ConfigurationProperties(prefix = "spring.datasourceLatest")
+	public DataSource datasourceLatest() {
 		return DataSourceBuilder.create().build();
 	}
 	
-	@Bean
+	@Bean(name = "datasourceOldEntityManagerFactory")
 	@Primary
-	public EntityManagerFactory datasourceOneEntityManagerFactory() {
-		LocalContainerEntityManagerFactoryBean beanone=new LocalContainerEntityManagerFactoryBean();
-		beanone.setDataSource(datasource());
-		beanone.setPackagesToScan("com.pool.datasourceone.entity");
-		beanone.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-		beanone.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-		beanone.afterPropertiesSet();
-		return beanone.getObject();
+	public EntityManagerFactory datasourceOldEntityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean beanOld=new LocalContainerEntityManagerFactoryBean();
+		beanOld.setDataSource(datasourceOld());
+		beanOld.setPackagesToScan("com.comrade.entity.db.old");
+		beanOld.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		beanOld.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+		beanOld.afterPropertiesSet();
+		return beanOld.getObject();
 	}
-	
-	@Bean
-	public EntityManagerFactory datasourceTwoEntityManagerFactory() {
-		LocalContainerEntityManagerFactoryBean beanone=new LocalContainerEntityManagerFactoryBean();
-		beanone.setDataSource(datasourcetwo());
-		beanone.setPackagesToScan("com.pool.datasourcetwo.entity");
-		beanone.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-		beanone.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-		beanone.afterPropertiesSet();
-		return beanone.getObject();
+
+	@Bean(name = "datasourceLatestEntityManagerFactory")
+	public EntityManagerFactory datasourceLatestEntityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean beanLatest=new LocalContainerEntityManagerFactoryBean();
+		beanLatest.setDataSource(datasourceLatest());
+		beanLatest.setPackagesToScan("com.comrade.entity.db.latest");
+		beanLatest.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		beanLatest.setPersistenceProviderClass(HibernatePersistenceProvider.class);
+		beanLatest.afterPropertiesSet();
+		return beanLatest.getObject();
 	}
 	
 	@Primary
 	@Bean
 	public JpaTransactionManager jpaTransactionManager() {
 		 JpaTransactionManager jpaTransactionManager=new JpaTransactionManager();
-		 jpaTransactionManager.setDataSource(datasource());
-		 jpaTransactionManager.setEntityManagerFactory(datasourceOneEntityManagerFactory());
+		 jpaTransactionManager.setDataSource(datasourceOld());
+		 jpaTransactionManager.setEntityManagerFactory(datasourceOldEntityManagerFactory());
 		 return jpaTransactionManager;
 	}
 	

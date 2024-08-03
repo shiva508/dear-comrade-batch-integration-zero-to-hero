@@ -1,22 +1,21 @@
 package com.comrade.config;
 
-import com.pool.entity.StudentOne;
-import com.pool.entity.StudentTwo;
+import com.comrade.entity.db.old.StudentOld;
+import com.comrade.entity.db.latest.StudentLatest;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudentItemProcessor implements ItemProcessor<StudentTwo, StudentOne> {
+public class StudentItemProcessor implements ItemProcessor<StudentOld, StudentLatest> {
 
 	@Override
-	public StudentOne process(StudentTwo item) throws Exception {
-		System.out.println(item);
-		StudentOne studentOne=new StudentOne();
-		studentOne.setStudentId(item.getStudentId());
-		studentOne.setFirstName(item.getFirstName());
-		studentOne.setLastName(item.getLastName());
-		studentOne.setEmail(item.getEmail());
-		return studentOne;
+	public StudentLatest process(StudentOld studentOld) throws Exception {
+		StudentLatest studentLatest = new StudentLatest();
+		studentLatest.setStudentId(studentOld.getStudentId());
+		studentLatest.setFirstName(studentOld.getFirstName());
+		studentLatest.setLastName(studentOld.getLastName());
+		studentLatest.setEmail(studentOld.getEmail());
+		return studentLatest;
 	}
 
 }

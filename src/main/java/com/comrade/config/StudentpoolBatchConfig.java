@@ -2,8 +2,8 @@ package com.comrade.config;
 
 import javax.sql.DataSource;
 
-import com.pool.entity.StudentOne;
-import com.pool.entity.StudentTwo;
+import com.comrade.entity.db.old.StudentOld;
+import com.comrade.entity.db.latest.StudentLatest;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -30,20 +30,20 @@ public class StudentpoolBatchConfig {
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 	@Autowired
-	@Qualifier("datasource")
-	private DataSource datasource;
+	@Qualifier("datasourceOld")
+	private DataSource datasourceOld;
 
 	@Autowired
-	@Qualifier("datasourcetwo")
-	private DataSource datasourcetwo;
+	@Qualifier("datasourceLatest")
+	private DataSource datasourceLatest;
 
 	@Autowired
-	@Qualifier("datasourceOneEntityManagerFactory")
-	private EntityManagerFactory datasourceOneEntityManagerFactory;
+	@Qualifier("datasourceLatestEntityManagerFactory")
+	private EntityManagerFactory datasourceLatestEntityManagerFactory;
 
 	@Autowired
-	@Qualifier("datasourceTwoEntityManagerFactory")
-	private EntityManagerFactory datasourceTwoEntityManagerFactory;
+	@Qualifier("datasourceOldEntityManagerFactory")
+	private EntityManagerFactory datasourceOldEntityManagerFactory;
 	
 	@Autowired
 	private StudentItemProcessor studentItemProcessor;
@@ -62,7 +62,7 @@ public class StudentpoolBatchConfig {
 	
 	public Step jpaBatchStep() {
 		return new StepBuilder("Jpa Batch Step",jobRepository)
-								.<StudentTwo, StudentOne>chunk(2,transactionManager)
+								.<StudentOld, StudentLatest>chunk(2,transactionManager)
 								.reader(jpaCursorItemReader())
 								.processor(studentItemProcessor)
 								.writer(jpaItemWriter())
@@ -70,16 +70,16 @@ public class StudentpoolBatchConfig {
 								.build();
 	}
 
-	public JpaCursorItemReader<StudentTwo> jpaCursorItemReader() {
-		JpaCursorItemReader<StudentTwo> jpaCursorItemReader = new JpaCursorItemReader<>();
-		jpaCursorItemReader.setEntityManagerFactory(datasourceTwoEntityManagerFactory);
-		jpaCursorItemReader.setQueryString("FROM StudentTwo");
+	public JpaCursorItemReader<StudentOld> jpaCursorItemReader() {
+		JpaCursorItemReader<StudentOld> jpaCursorItemReader = new JpaCursorItemReader<>();
+		jpaCursorItemReader.setEntityManagerFactory(datasourceOldEntityManagerFactory);
+		jpaCursorItemReader.setQueryString("FROM StudentOld");
 		return jpaCursorItemReader;
 	}
 
-	public JpaItemWriter<StudentOne> jpaItemWriter() {
-		JpaItemWriter<StudentOne> jpaItemWriter=new JpaItemWriter<>();
-		jpaItemWriter.setEntityManagerFactory(datasourceOneEntityManagerFactory);
+	public JpaItemWriter<StudentLatest> jpaItemWriter() {
+		JpaItemWriter<StudentLatest> jpaItemWriter=new JpaItemWriter<>();
+		jpaItemWriter.setEntityManagerFactory(datasourceLatestEntityManagerFactory);
 		return jpaItemWriter;
 	}
 }

@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "student_info",schema = "dha-latest")
-public class StudentTwo implements Serializable {
+public class StudentLatest implements Serializable {
 	@Id
 	@Column(name = "student_id")
 	private Long studentId;
@@ -20,7 +20,7 @@ public class StudentTwo implements Serializable {
 	@Column(name = "email")
 	private String email;
 
-	public StudentTwo() {
+	public StudentLatest() {
 
 	}
 
