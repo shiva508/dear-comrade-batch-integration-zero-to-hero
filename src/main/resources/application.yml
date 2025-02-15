@@ -1,11 +1,18 @@
+server:
+  shutdown: GRACEFUL
 spring:
   application:
     name: dear-comrade-batch-integration-zero-to-hero
   datasource:
-    url: jdbc:postgresql://172.21.0.2:5432/dha
+    url: jdbc:postgresql://localhost:5432/dha
     username: comrade
     password: dear
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
+  batch:
+    jdbc:
+      initialize-schema: NEVER
+    job:
+      enabled: false
